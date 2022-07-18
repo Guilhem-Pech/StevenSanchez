@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using DSharpPlus;
@@ -54,6 +56,8 @@ namespace StevenSanchez
 
     public static class Utils
     {
+        public static readonly HttpClient client = new HttpClient();
+
         public static async Task<Dictionary<ulong, Puceau>> WriteInformation(DiscordClient _client, DiscordGuild _guild)
         {
             DiscordEmoji emoteBirthday = DiscordEmoji.FromName(_client, ":birthday:");
@@ -163,7 +167,13 @@ namespace StevenSanchez
     }
     
     
-    
+
+    class Result
+    {
+        public string range = "";
+        public string majorDimantion = "";
+        public List<List<string>> values = new List<List<string>>();
+    }
 
     public class SlashCommands : ApplicationCommandModule
         {
@@ -171,7 +181,6 @@ namespace StevenSanchez
             public async Task TestCommand(InteractionContext ctx)
             {
                 await Utils.WriteInformation(ctx.Client, ctx.Guild);
-
                 await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().WithContent("Success!"));
             }
         

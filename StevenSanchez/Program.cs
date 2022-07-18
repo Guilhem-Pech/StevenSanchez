@@ -1,8 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Net.Mime;
 using System.Text;
 using System.Threading.Tasks;
 using DSharpPlus;
@@ -185,17 +190,33 @@ namespace StevenSanchez
                     }
                     else
                     {
+                        Utils.client.DefaultRequestHeaders.Accept.Clear();
+                        Utils.client.DefaultRequestHeaders.Accept.Add(
+                            new MediaTypeWithQualityHeaderValue("application/json"));
+        
+                        var streamTask = await Utils.client.GetStringAsync("https://sheets.googleapis.com/v4/spreadsheets/10RZpGp4Vo2kAv1h0mt_nxdtyKIsNZvO-eKfgD_6Ljrg/values/A2:B1000?key=AIzaSyAIIskUuzPVNO1nev2dCqkmtM3Ukd9n4Q0");
+                        var results = JsonConvert.DeserializeObject<Result>(streamTask);
+                        Random random = new Random();
+                        var r = random.Next(results.values.Count);
+
+                        var m = new DiscordMessageBuilder().WithContent(results.values[r][0]);
+                        if (results.values.Count > 1)
+                        {
+                            m.WithEmbed(new DiscordEmbedBuilder()
+                            {
+                                ImageUrl = results.values[r][1]
+                            });
+                        }
                         await e.Guild.GetDefaultChannel()
-                            .SendMessageAsync(
-                                new DiscordMessageBuilder().WithContent(
-                                    $"C'est l'anniversaire de personne aujourd'hui, désoooooooooo"));
+                            .SendMessageAsync(m);
                     }
                 }
-
                 LastDateTimeBirthdayCheck = DateTime.Today;
             }
         }
 
+        // https://docs.google.com/spreadsheets/d/10RZpGp4Vo2kAv1h0mt_nxdtyKIsNZvO-eKfgD_6Ljrg/edit?usp=sharing
+       
 
         private Task Client_Ready(DiscordClient sender, ReadyEventArgs e)
         {
