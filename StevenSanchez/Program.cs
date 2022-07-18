@@ -200,7 +200,7 @@ namespace StevenSanchez
                         var r = random.Next(results.values.Count);
 
                         var m = new DiscordMessageBuilder().WithContent(results.values[r][0]);
-                        if (results.values.Count > 1)
+                        if (results.values[0].Count > 1)
                         {
                             m.WithEmbed(new DiscordEmbedBuilder()
                             {
